@@ -5,14 +5,18 @@ import { graphql } from 'gatsby'
 
 export default function BlogPage({ data }) {
 
-const nodes = data.allFile.nodes
+const nodes = data.allMdx.nodes
 
   return(
     <Layout pageTitle='My Blog Posts'>
       <ul>
       {
         nodes.map(node => (
-          <li key={node.name}>{node.name}</li>
+          <article key={node.id}>
+            <h2>{node.frontmatter.title}</h2>
+            <p>Posted: {node.frontmatter.date}</p>
+            <p>{node.excerpt}</p>
+          </article>
         ))
       }
       </ul>
@@ -21,13 +25,18 @@ const nodes = data.allFile.nodes
 }
 
 export const query = graphql`
-  query{
-    allFile(filter: {sourceInstanceName: {eq: "blog"}}){
-      nodes{
-        name
+query {
+  allMdx(sort: {frontmatter: {date: DESC}}) {
+    nodes {
+      frontmatter {
+        date(formatString: "D MMMM, YYYY")
+        title
       }
+      id
+      excerpt
     }
   }
+}
 `
 
 export const Head = () => <Seo title="My Blog Posts" />
